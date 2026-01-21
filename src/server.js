@@ -1,4 +1,5 @@
 import express from "express";
+import morgan from "morgan";
 import dotenv from "dotenv";
 import { connectDB } from "./libs/db.js";
 import authRoute from "./routes/authRoute.js";
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 5001;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(morgan("dev"));
 
 // CLOUDINARY Configuration
 cloudinary.config({
@@ -51,5 +53,11 @@ app.use("/api/upload", uploadRoute);
 connectDB().then(() => {
   server.listen(PORT, () => {
     console.log(`server bắt đầu trên cổng ${PORT}`);
+    console.log("--- DEBUG ENV VARS ---");
+    console.log("CLIENT_URL:", process.env.CLIENT_URL);
+    console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME ? "Đã set" : "Thiếu");
+    console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "Đã set" : "Thiếu");
+    console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "Đã set" : "Thiếu");
+    console.log("----------------------");
   });
 });

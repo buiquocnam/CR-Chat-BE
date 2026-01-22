@@ -42,7 +42,7 @@ export const searchUserByUsername = async (req, res) => {
         }
       ]
     })
-      .select("_id displayName username avatarUrl email")
+      .select("_id displayName username avatarUrl email bio phone createdAt")
       .limit(parseInt(limit))
       .lean();
 

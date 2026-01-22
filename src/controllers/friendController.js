@@ -64,7 +64,7 @@ export const acceptFriendRequest = async ({ requestId, userId }) => {
   await FriendRequest.findByIdAndDelete(requestId);
 
   const from = await User.findById(request.from)
-    .select("_id displayName avatarUrl username") // Added username for consistency
+    .select("_id displayName avatarUrl username email bio phone createdAt")
     .lean();
 
   return {
@@ -72,7 +72,11 @@ export const acceptFriendRequest = async ({ requestId, userId }) => {
       _id: from?._id,
       displayName: from?.displayName,
       avatarUrl: from?.avatarUrl,
-      username: from?.username
+      username: from?.username,
+      email: from?.email,
+      bio: from?.bio,
+      phone: from?.phone,
+      createdAt: from?.createdAt
     }
   };
 };
@@ -127,8 +131,8 @@ export const getAllFriends = async (req, res) => {
         { userB: userId },
       ],
     })
-      .populate("userA", "_id displayName avatarUrl username")
-      .populate("userB", "_id displayName avatarUrl username")
+      .populate("userA", "_id displayName avatarUrl username email bio phone createdAt")
+      .populate("userB", "_id displayName avatarUrl username email bio phone createdAt")
       .lean();
 
     if (!friendships.length) {
@@ -156,7 +160,7 @@ export const getFriendRequests = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const populateFields = "_id username displayName avatarUrl";
+    const populateFields = "_id username displayName avatarUrl email bio phone createdAt";
 
     const [sent, received] = await Promise.all([
       FriendRequest.find({ from: userId }).populate("to", populateFields),
@@ -180,8 +184,8 @@ export const getOnlineFriends = async (req, res) => {
         { userB: userId },
       ],
     })
-      .populate("userA", "_id displayName avatarUrl username")
-      .populate("userB", "_id displayName avatarUrl username")
+      .populate("userA", "_id displayName avatarUrl username email bio phone createdAt")
+      .populate("userB", "_id displayName avatarUrl username email bio phone createdAt")
       .lean();
 
     if (!friendships.length) {
